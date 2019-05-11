@@ -6,9 +6,9 @@ import secret_keys
 import datetime
 
 
-class WebDriver():
-    def __init__(self, driver):
-        self.driver: webdriver = driver
+class WebDriver:
+    def __init__(self, _driver: webdriver):
+        self.driver: webdriver = _driver
 
     def __enter__(self) -> webdriver:
         return self.driver
@@ -24,30 +24,35 @@ def do_that_func_only_if_css_element_was_found(orig_func):
         except NoSuchElementException:
             # print(f'Unable to locate element with css class:{kwargs.get("css_class_name", "")} ')
             pass
-        except:
-            pass
+        except Exception as ex:
+            return type(ex).__name__
     return modified_func_with
 
 
 @do_that_func_only_if_css_element_was_found
-def send_to(css_class_name: str, with_driver: webdriver, keys: str = ''):
-    login_field = with_driver.find_element_by_css_selector(f'.{css_class_name}')
+def send_to_field_with(css_class_name: str, keys: str, _driver: webdriver):
+    login_field = _driver.find_element_by_css_selector(f'.{css_class_name}')
     login_field.clear()
     login_field.send_keys(keys)
 
 
 @do_that_func_only_if_css_element_was_found
-def click_button(css_class_name: str, with_driver: webdriver, re_login: bool = False):
-    btn_login = with_driver.find_element_by_css_selector(f'.{css_class_name}')
+def click_btn_with(css_class: str, _driver: webdriver, need_to_login: bool = False):
+    btn_login = _driver.find_element_by_css_selector(f'.{css_class}')
     btn_login.click()
-    if re_login:
-        login(with_driver)
+    if need_to_login:
+        login(_driver)
 
 
-def login(_driver:webdriver):
-    send_to(css_class_name='js-signin-login', with_driver=_driver, keys=secret_keys.badoo_email)
-    send_to(css_class_name='js-signin-password', with_driver=_driver, keys=secret_keys.badoo_pass)
-    click_button(css_class_name='sign-form__submit', with_driver=_driver)
+@do_that_func_only_if_css_element_was_found
+def get_user_name(_driver: webdriver) -> str:
+    return _driver.find_element_by_css_selector('.profile-header__name').text
+
+
+def login(_driver: webdriver):
+    send_to_field_with(css_class_name='js-signin-login', keys=secret_keys.badoo_email, _driver=_driver)
+    send_to_field_with(css_class_name='js-signin-password', keys=secret_keys.badoo_pass, _driver=_driver)
+    click_btn_with(css_class='sign-form__submit', _driver=_driver)
     time.sleep(2)
     driver.get('https://badoo.com/encounters')
 
@@ -55,21 +60,34 @@ def login(_driver:webdriver):
 with WebDriver(webdriver.Chrome('./chromedriver')) as driver:
     driver.get('https://badoo.com/ru/signin/?f=top')
     login(driver)
-    time.sleep(2)
+    unsuccessful_click_counter = 0
     i = 0
+    old_user_or_error_name = ''
     while True:
         i += 1
         # deny blocking questions
-        click_button(css_class_name='js-chrome-pushes-deny', with_driver=driver)
-        click_button(css_class_name='js-continue', with_driver=driver)
-        click_button(css_class_name='js-session-expire', with_driver=driver, re_login=True)
+        click_btn_with(css_class='js-chrome-pushes-deny', _driver=driver)
+        click_btn_with(css_class='js-continue', _driver=driver)
+        click_btn_with(css_class='js-ovl-close', _driver=driver)  # new match close
+        click_btn_with(css_class='js-session-expire', _driver=driver, need_to_login=True)
         time.sleep(randint(1, 2))
         was_clicked = 'like'
         if randint(0, 1) == 1:
-            click_button(css_class_name='js-profile-header-vote-yes', with_driver=driver)
+            click_btn_with(css_class='js-profile-header-vote-yes', _driver=driver)
         else:
             was_clicked = 'dislike'
-            click_button(css_class_name='js-profile-header-vote-no', with_driver=driver)
+            click_btn_with(css_class='js-profile-header-vote-no', _driver=driver)
+        new_user_or_error_name = get_user_name()
+        if new_user_or_error_name == old_user_or_error_name:
+            unsuccessful_click_counter += 1
+            if unsuccessful_click_counter >= 2:
+                print(f"too many tries to click with no result, lets sleep to wait, user_or_error_name\
+                 = {new_user_or_error_name}")
+                time.sleep(60 * 60 * 1)
+                unsuccessful_click_counter = 0
+        else:
+            unsuccessful_click_counter = 0
+        old_user_or_error_name = new_user_or_error_name
         print(f'{i}.  {was_clicked}   --- {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
         time.sleep(randint(1, 4))
 
