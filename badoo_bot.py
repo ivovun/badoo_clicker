@@ -22,7 +22,7 @@ def do_that_func_only_if_css_element_was_found(orig_func):
         try:
             return orig_func(**kwargs)
         except NoSuchElementException:
-            # print(f'Unable to locate element with css class:{kwargs.get("css_class_name", "")} ')
+            # print(f'Unable to locate element with css class:{kwargs.get("css_class", "")} ')
             pass
         except Exception as ex:
             # time.sleep(60 * 60 * 24)  # strange error lets keep browser open
@@ -31,8 +31,8 @@ def do_that_func_only_if_css_element_was_found(orig_func):
 
 
 @do_that_func_only_if_css_element_was_found
-def send_to_field_with(css_class_name: str, keys: str, _driver: webdriver):
-    login_field = _driver.find_element_by_css_selector(f'.{css_class_name}')
+def send_to_field_with(css_class: str, keys: str, _driver: webdriver):
+    login_field = _driver.find_element_by_css_selector(f'.{css_class}')
     login_field.clear()
     login_field.send_keys(keys)
 
@@ -51,8 +51,8 @@ def get_user_name(_driver: webdriver) -> str:
 
 
 def login(_driver: webdriver):
-    send_to_field_with(css_class_name='js-signin-login', keys=secret_keys.badoo_email, _driver=_driver)
-    send_to_field_with(css_class_name='js-signin-password', keys=secret_keys.badoo_pass, _driver=_driver)
+    send_to_field_with(css_class='js-signin-login', keys=secret_keys.badoo_email, _driver=_driver)
+    send_to_field_with(css_class='js-signin-password', keys=secret_keys.badoo_pass, _driver=_driver)
     click_btn_with(css_class='sign-form__submit', _driver=_driver)
     time.sleep(2)
     driver.get('https://badoo.com/encounters')
@@ -96,5 +96,5 @@ with WebDriver(webdriver.Chrome('./chromedriver')) as driver:
 
 
 
-# click_button(css_class_name='js-chrome-pushes-deny', with_driver=driver)
+# click_button(css_class='js-chrome-pushes-deny', with_driver=driver)
 # time.sleep(randint(1, 3))
