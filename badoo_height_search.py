@@ -221,7 +221,7 @@ def main_circle():
                 number_without_appearence = 0
                 tup = tuple(range(177, 184))
                 girl_is_found = False
-                print(f'testing --- {appearance_div_h.text}')
+                print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}-- {appearance_div_h.text}')
                 for x in tup:
                     if str(x) in appearance_div_h.text:
                         about = return__element_by_xpath(xpath="//span[@class='profile-section__txt']", _driver=driver)
