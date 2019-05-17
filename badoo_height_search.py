@@ -240,14 +240,19 @@ def main_circle():
                         mixer.music.play()
                         # time.sleep(100000)
 
-                        answer = input("to stop enter y: ")
-                        if answer != 'y':
-                            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-yes', _driver=driver)
-                            girl_is_found = True
-                            mixer.music.stop()
+                        answer = input("to stop enter 'y', for vote-NO enter: 'n', to continue press other keys ")
+                        mixer.music.stop()
+
+                        if answer == 'y':
+                            exit()
+                        elif answer == 'n':
+                            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
+                            girl_is_found = False
                             break
                         else:
-                            exit()
+                            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-yes', _driver=driver)
+                            girl_is_found = True
+                            break
 
                 if not girl_is_found:
                     click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
