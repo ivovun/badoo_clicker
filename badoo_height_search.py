@@ -219,7 +219,7 @@ def main_circle():
 
             if appearance_div_h is not None:
                 number_without_appearence = 0
-                tup = tuple(range(150, 184))
+                tup = tuple(range(177, 184))
                 girl_is_found = False
                 print(f'testing --- {appearance_div_h.text}')
                 for x in tup:
