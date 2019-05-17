@@ -117,6 +117,8 @@ def login(_driver: webdriver):
         time.sleep(2)
         login(_driver)
 
+    _driver.execute_script("document.body.style.transform='scale(0.5)'")
+    time.sleep(3)
     _driver.get('https://badoo.com/encounters')
 
 
@@ -175,8 +177,7 @@ def main_circle():
         driver.get('https://badoo.com/ru/signin/?f=top')
         login(driver)
         # time.sleep(100000)
-        driver.execute_script("document.body.style.transform='scale(0.5)'")
-        time.sleep(3)
+
         i = 0
         max_number_without_appearence = 30
         number_without_appearence = 0
