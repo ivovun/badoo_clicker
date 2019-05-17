@@ -185,7 +185,7 @@ def extract_text(old_text: str):
     return text1
 
 
-def main_circle():
+def main_cycle():
 
     with WebDriver(webdriver.Chrome('./chromedriver')) as driver:
         driver.get('https://badoo.com/ru/signin/?f=top')
@@ -268,7 +268,7 @@ def main_circle():
 
                         break
 
-                click_btn_with(css_sel_or_xpath='.js-profile-header-vote-' + 'yes' if girl_is_found else 'no'
+                click_btn_with(css_sel_or_xpath='.js-profile-header-vote-' + ('yes' if girl_is_found else 'no')
                                , _driver=driver)
             else:
                 click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
@@ -279,4 +279,4 @@ def main_circle():
 if __name__ == '__main__':
 
     while True:
-        main_circle()
+        main_cycle()
