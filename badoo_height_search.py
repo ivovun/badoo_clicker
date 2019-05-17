@@ -219,7 +219,7 @@ def main_circle():
 
             if appearance_div_h is not None:
                 number_without_appearence = 0
-                tup = tuple(range(177, 184))
+                tup = tuple(range(150, 184))
                 girl_is_found = False
                 print(f'testing --- {appearance_div_h.text}')
                 for x in tup:
@@ -240,22 +240,20 @@ def main_circle():
                         mixer.music.play()
                         # time.sleep(100000)
 
-                        answer = input("to stop enter 'y', for vote-NO enter: 'n', to continue press other keys ")
+                        answer = input("to finish enter 'y', for vote-NO enter: 'n', to continue press other keys: ").strip()
                         mixer.music.stop()
 
                         if answer == 'y':
                             exit()
                         elif answer == 'n':
-                            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
                             girl_is_found = False
-                            break
                         else:
-                            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-yes', _driver=driver)
                             girl_is_found = True
-                            break
 
-                if not girl_is_found:
-                    click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
+                        break
+
+                click_btn_with(css_sel_or_xpath='.js-profile-header-vote-' + 'yes' if girl_is_found else 'no'
+                               , _driver=driver)
             else:
                 click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
             time.sleep(random_float_number(1, 2))
