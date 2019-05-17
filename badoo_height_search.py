@@ -210,9 +210,11 @@ def main_circle():
             click_btn_with(css_sel_or_xpath='//div[@onclick="window.location.reload();"]', _driver=driver
                            , need_to_login=True
                            , use_xpath=True)
+            driver.execute_script("document.body.style.transform='scale(0.5)'")
+
             # go to profile
             click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
-            time.sleep(random_float_number(3, 4))
+            time.sleep(random_float_number(1, 2))
 
             appearance_div_h = return__element_by_xpath(xpath="//div[@class='form-label b']/b[contains(text(),\
              'Appearance:')]/parent::div//following-sibling::div", _driver=driver)
