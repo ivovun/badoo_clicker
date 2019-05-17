@@ -139,6 +139,17 @@ def return__element_by_xpath(xpath: str, _driver: webdriver):
     # return None
 
 
+def replace_text(old_text, old: str, new: str) ->str:
+    while True:
+        new_r = old_text.replace(old, new)
+        if new_r == old_text:
+            break
+        else:
+            old_text = new_r
+
+        return old_text
+
+
 def extract_text(old_text: str):
     soup = BeautifulSoup(old_text, 'html.parser')
 
@@ -147,26 +158,29 @@ def extract_text(old_text: str):
     for tag in tags:
         text1 += tag.text.strip() + '\n'
 
-    while True:
-        new_r = text1.replace('  ', '\n')
-        if new_r == text1:
-            break
-        else:
-            text1 = new_r
-
-    while True:
-        new_r = text1.replace('\n\n', '\n')
-        if new_r == text1:
-            break
-        else:
-            text1 = new_r
-
-    while True:
-        new_r = text1.replace(':\n', ':')
-        if new_r == text1:
-            break
-        else:
-            text1 = new_r
+    replace_text(text1, '  ', '\n')
+    replace_text(text1, '\n\n', '\n')
+    replace_text(text1, ':\n', ':')
+    # while True:
+    #     new_r = text1.replace('  ', '\n')
+    #     if new_r == text1:
+    #         break
+    #     else:
+    #         text1 = new_r
+    #
+    # while True:
+    #     new_r = text1.replace('\n\n', '\n')
+    #     if new_r == text1:
+    #         break
+    #     else:
+    #         text1 = new_r
+    #
+    # while True:
+    #     new_r = text1.replace(':\n', ':')
+    #     if new_r == text1:
+    #         break
+    #     else:
+    #         text1 = new_r
 
     return text1
 
@@ -233,7 +247,7 @@ def main_circle():
                         whole_info = return__element_by_xpath(xpath="//div[@class='profile__info']", _driver=driver)
                         whole_info_text = whole_info.text if whole_info is not None else ''
 
-                        driver.girls_set.add((description_txt, whole_info_text) )
+                        driver.girls_set.add((description_txt, whole_info_text))
                         print(description_txt)
 
 
