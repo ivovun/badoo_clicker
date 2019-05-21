@@ -183,26 +183,22 @@ def main_cycle():
                            , need_to_login=True
                            , use_xpath=True)
             set_scale(driver)
-
             # go to profile
             click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
             time.sleep(random_float_number(1, 2))
-
             appearance_div_h = return__element_by_xpath(xpath="//div[@class='form-label b']/b[contains(text(),\
              'Appearance:')]/parent::div//following-sibling::div", _driver=driver)
-
+            name_span = return__element_by_xpath(xpath='//h1[@class="profile-header__user"]'
+                                                 , _driver=driver)
+            name_span_txt = name_span.text if name_span is not None else ''
             if appearance_div_h is not None:
                 number_without_appearence = 0
                 tup = tuple(range(177, 184))
                 girl_is_found = False
-                print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}-- {appearance_div_h.text}')
-
+                print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}--[{name_span_txt}]\
+{appearance_div_h.text}')
                 whole_info = return__element_by_xpath(xpath="//div[@class='profile__info']", _driver=driver)
                 whole_info_text = whole_info.text if whole_info is not None else ''
-                # print(whole_info_text)
-                # whole_info_text = extract_text(whole_info_text)
-                # print(whole_info_text)
-
                 if 'Kids:' in whole_info_text: # kids
                     if 'Someday'not in whole_info_text and 'No, never' not in whole_info_text :
                         rids_str = ' ==== KIDS ===================================='
@@ -215,7 +211,7 @@ def main_cycle():
                 for x in tup:
                     if str(x) in appearance_div_h.text:
                         about = return__element_by_xpath(xpath="//span[@class='profile-section__txt']", _driver=driver)
-                        description_txt = f"!!!==>>>height = {x}, about={about.text if about is not None else ''}\
+                        description_txt = f"!!!==>>>height = {x},[{name_span_txt}] about={about.text if about is not None else ''}\
                             appearance={appearance_div_h.text} "
                         driver.girls_set.add((description_txt, whole_info_text))
                         print(description_txt)
