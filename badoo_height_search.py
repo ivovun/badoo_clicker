@@ -104,6 +104,10 @@ def get_user_name(_driver: webdriver) -> str:
     return _driver.find_element_by_css_selector('.profile-header__name').text
 
 
+def set_scale(_driver: webdriver):
+    _driver.execute_script("document.body.style.transform='scale(1.0)'")
+
+
 def login(_driver: webdriver):
     send_to_field_with(css_sel_or_xpath='.js-signin-login', keys=secret_keys.badoo_email, _driver=_driver)
     send_to_field_with(css_sel_or_xpath='.js-signin-password', keys=secret_keys.badoo_pass, _driver=_driver)
@@ -117,7 +121,7 @@ def login(_driver: webdriver):
         time.sleep(2)
         login(_driver)
 
-    _driver.execute_script("document.body.style.transform='scale(0.5)'")
+    set_scale(_driver)
     time.sleep(3)
     _driver.get('https://badoo.com/encounters')
 
@@ -224,7 +228,7 @@ def main_cycle():
             click_btn_with(css_sel_or_xpath='//div[@onclick="window.location.reload();"]', _driver=driver
                            , need_to_login=True
                            , use_xpath=True)
-            driver.execute_script("document.body.style.transform='scale(0.5)'")
+            set_scale(driver)
 
             # go to profile
             click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
