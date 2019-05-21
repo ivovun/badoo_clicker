@@ -248,5 +248,13 @@ def main_cycle():
 # class selenium.webdriver.support.expected_conditions.staleness_of(element)[source]
 if __name__ == '__main__':
 
-    while True:
-        main_cycle()
+    try:
+        while True:
+            main_cycle()
+    except:
+        mixer.init()
+        mixer.music.load("Pink Floyd - Another Brick In The Wall (HQ).mp3")
+        mixer.music.play()
+        answer = input("press any key to stop: ").strip()
+        mixer.music.stop()
+
