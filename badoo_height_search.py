@@ -143,52 +143,6 @@ def return__element_by_xpath(xpath: str, _driver: webdriver):
     # return None
 
 
-def replace_text(old_text, old: str, new: str) ->str:
-    while True:
-        new_r = old_text.replace(old, new)
-        if new_r == old_text:
-            break
-        else:
-            old_text = new_r
-
-        return old_text
-
-
-def extract_text(old_text: str):
-    soup = BeautifulSoup(old_text, 'html.parser')
-
-    tags = soup("div", {"class": "profile-section"})
-    text1 = ''
-    for tag in tags:
-        text1 += tag.text.strip() + '\n'
-
-    replace_text(text1, '  ', '\n')
-    replace_text(text1, '\n\n', '\n')
-    replace_text(text1, ':\n', ':')
-    # while True:
-    #     new_r = text1.replace('  ', '\n')
-    #     if new_r == text1:
-    #         break
-    #     else:
-    #         text1 = new_r
-    #
-    # while True:
-    #     new_r = text1.replace('\n\n', '\n')
-    #     if new_r == text1:
-    #         break
-    #     else:
-    #         text1 = new_r
-    #
-    # while True:
-    #     new_r = text1.replace(':\n', ':')
-    #     if new_r == text1:
-    #         break
-    #     else:
-    #         text1 = new_r
-
-    return text1
-
-
 def main_cycle():
 
     with WebDriver(webdriver.Chrome('./chromedriver')) as driver:
@@ -242,15 +196,22 @@ def main_cycle():
                 tup = tuple(range(177, 184))
                 girl_is_found = False
                 print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}-- {appearance_div_h.text}')
+
+                whole_info = return__element_by_xpath(xpath="//div[@class='profile__info']", _driver=driver)
+                whole_info_text = whole_info.text if whole_info is not None else ''
+                # print(whole_info_text)
+                # whole_info_text = extract_text(whole_info_text)
+                # print(whole_info_text)
+
+                if 'Kids:' in whole_info_text: # kids
+                    if 'Someday'not in whole_info_text:
+                        continue
+
                 for x in tup:
                     if str(x) in appearance_div_h.text:
                         about = return__element_by_xpath(xpath="//span[@class='profile-section__txt']", _driver=driver)
                         description_txt = f"!!!==>>>height = {x}, about={about.text if about is not None else ''}\
                             appearance={appearance_div_h.text} "
-
-                        whole_info = return__element_by_xpath(xpath="//div[@class='profile__info']", _driver=driver)
-                        whole_info_text = whole_info.text if whole_info is not None else ''
-
                         driver.girls_set.add((description_txt, whole_info_text))
                         print(description_txt)
 
