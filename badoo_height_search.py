@@ -191,11 +191,12 @@ def main_cycle():
             name_span = return__element_by_xpath(xpath='//h1[@class="profile-header__user"]'
                                                  , _driver=driver)
             name_span_txt = name_span.text if name_span is not None else ''
+            name_span_txt = name_span_txt.replace('\n', '')
             if appearance_div_h is not None:
                 number_without_appearence = 0
                 tup = tuple(range(177, 184))
                 girl_is_found = False
-                print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}--[{name_span_txt}]\
+                print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}--[{name_span_txt}] ==> \
 {appearance_div_h.text}')
                 whole_info = return__element_by_xpath(xpath="//div[@class='profile__info']", _driver=driver)
                 whole_info_text = whole_info.text if whole_info is not None else ''
@@ -211,7 +212,7 @@ def main_cycle():
                 for x in tup:
                     if str(x) in appearance_div_h.text:
                         about = return__element_by_xpath(xpath="//span[@class='profile-section__txt']", _driver=driver)
-                        description_txt = f"!!!==>>>height = {x},[{name_span_txt}] about={about.text if about is not None else ''}\
+                        description_txt = f"!!!==>>>height = {x},[{name_span_txt}]== about={about.text if about is not None else ''}\
                             appearance={appearance_div_h.text} "
                         driver.girls_set.add((description_txt, whole_info_text))
                         print(description_txt)
