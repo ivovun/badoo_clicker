@@ -204,7 +204,12 @@ def main_cycle():
                 # print(whole_info_text)
 
                 if 'Kids:' in whole_info_text: # kids
-                    if 'Someday'not in whole_info_text:
+                    if 'Someday'not in whole_info_text and 'No, never' not in whole_info_text :
+                        rids_str = ' ==== KIDS ===================================='
+                        print(rids_str)
+                        print(whole_info_text)
+                        print(rids_str)
+
                         continue
 
                 for x in tup:
