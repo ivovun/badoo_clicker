@@ -194,7 +194,7 @@ def main_cycle():
             name_span_txt = name_span_txt.replace('\n', '')
             if appearance_div_h is not None:
                 number_without_appearence = 0
-                tup = tuple(range(177, 184))
+                tup = tuple(range(178, 184))
                 girl_is_found = False
                 print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}--[{name_span_txt}] ==> \
 {appearance_div_h.text}')
