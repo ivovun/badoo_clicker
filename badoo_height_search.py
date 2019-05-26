@@ -27,9 +27,9 @@ def login(_driver: webdriver):
     time.sleep(random_float_number(2, 3))
 
     # if unsuccessful login, lets retry
-    signin_link = return__element_by_xpath(xpath="//a[@class='link js-signin-link']", _driver=_driver)
-    if signin_link is not None:
-        signin_link.click()
+    sign_in_link = return__element_by_xpath(xpath="//a[@class='link js-signin-link']", _driver=_driver)
+    if sign_in_link is not None:
+        sign_in_link.click()
         time.sleep(2)
         login(_driver)
 
@@ -39,17 +39,16 @@ def login(_driver: webdriver):
 
 
 def main_cycle():
-
     with WebDriver(webdriver.Chrome('./chromedriver'), 'badoo_height_search_logs') as driver:
         driver.get('https://badoo.com/ru/signin/?f=top')
         login(driver)
         i = 0
         max_number_without_appearence = 30
-        number_without_appearence = 0
+        number_without_appearance = 0
         while True:
             i += 1
-            number_without_appearence += 1
-            if number_without_appearence > max_number_without_appearence:
+            number_without_appearance += 1
+            if number_without_appearance > max_number_without_appearence:
                 return
             max_number_of_same_errors = 100
             set_of_errors = set()
@@ -68,9 +67,8 @@ def main_cycle():
             click_btn_with(css_sel_or_xpath='.js-continue', _driver=driver)
             click_btn_with(css_sel_or_xpath='.icon.js-ovl-close', _driver=driver)  # new match close
             click_btn_with(css_sel_or_xpath='.js-session-expire', _driver=driver, login_func=login)
-            click_btn_with(css_sel_or_xpath='//div[@onclick="window.location.reload();"]', _driver=driver
-                           , login_func=login
-                           , use_xpath=True)
+            click_btn_with(css_sel_or_xpath='//div[@onclick="window.location.reload();"]', _driver=driver,
+                           login_func=login, use_xpath=True)
             set_scale(driver)
             # go to profile
             click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
@@ -82,7 +80,7 @@ def main_cycle():
             name_span_txt = name_span.text if name_span is not None else ''
             name_span_txt = name_span_txt.replace('\n', '')
             if appearance_div_h is not None:
-                number_without_appearence = 0
+                number_without_appearance = 0
                 tup = tuple(range(178, 184))
                 girl_is_found = False
                 print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}--[{name_span_txt}] ==> \
@@ -90,11 +88,11 @@ def main_cycle():
                 whole_info = return__element_by_xpath(xpath="//div[@class='page__content-inner has-profile-info']"
                                                       , _driver=driver)
                 whole_info_text = whole_info.text if whole_info is not None else ''
-                if 'Kids:' in whole_info_text: # kids
-                    if 'Someday'not in whole_info_text and 'No, never' not in whole_info_text :
+                if 'Kids:' in whole_info_text:  # kids
+                    if 'Someday' not in whole_info_text and 'No, never' not in whole_info_text:
                         rids_str = ' ==== KIDS ===================================='
                         print(rids_str)
-                        print(whole_info_text)
+                        print(whole_info_text.replace('\n', '  '))
                         print(rids_str)
                         continue
                 for x in tup:
@@ -133,4 +131,3 @@ if __name__ == '__main__':
         ask_question_with_sound(question="press any key to stop music (and exit program): "
                                 , sound_file="Pink Floyd - Another Brick In The Wall (HQ)")
         raise ex
-
