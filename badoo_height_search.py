@@ -1,6 +1,6 @@
 import time
 from selenium import webdriver
-import secret_keys
+from secret_keys import badoo_email, badoo_pass
 import datetime
 from common import (
     WebDriver,
@@ -20,8 +20,8 @@ def get_user_name(_driver: webdriver) -> str:
 
 
 def login(_driver: webdriver):
-    send_to_field_with(css_sel_or_xpath='.js-signin-login', keys=secret_keys.badoo_email, _driver=_driver)
-    send_to_field_with(css_sel_or_xpath='.js-signin-password', keys=secret_keys.badoo_pass, _driver=_driver)
+    send_to_field_with(css_sel_or_xpath='.js-signin-login', keys=badoo_email, _driver=_driver)
+    send_to_field_with(css_sel_or_xpath='.js-signin-password', keys=badoo_pass, _driver=_driver)
     click_btn_with(css_sel_or_xpath='//button[@class="btn btn--sm btn--block"]', _driver=_driver, login_func=login
                    , use_xpath=True)
     time.sleep(random_float_number(2, 3))
