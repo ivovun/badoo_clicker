@@ -1,6 +1,6 @@
+import os
 import time
 from selenium import webdriver
-from secret_keys import badoo_email, badoo_pass
 import datetime
 from common import (
     WebDriver,
@@ -10,10 +10,11 @@ from common import (
     do_that_func_only_if_css_element_was_found,
     random_float_number,
     return__element_by_xpath,
-    ask_question_with_sound
+    ask_question_with_sound,
+    format_text_for_terminal_print,
+    return_first_existing_element_or_none_for
 )
 import re
-import textwrap
 
 
 @do_that_func_only_if_css_element_was_found
@@ -22,11 +23,11 @@ def get_user_name(_driver: webdriver) -> str:
 
 
 def login(_driver: webdriver):
-    send_to_field_with(css_sel_or_xpath='.js-signin-login', keys=badoo_email, _driver=_driver)
-    send_to_field_with(css_sel_or_xpath='.js-signin-password', keys=badoo_pass, _driver=_driver)
+    send_to_field_with(css_sel_or_xpath='.js-signin-login', keys=BADOO_EMAIL, _driver=_driver)
+    send_to_field_with(css_sel_or_xpath='.js-signin-password', keys=BADOO_PASS, _driver=_driver)
     click_btn_with(css_sel_or_xpath='//button[@class="btn btn--sm btn--block"]', _driver=_driver, login_func=login
                    , use_xpath=True)
-    time.sleep(random_float_number(2, 3))
+    time.sleep(random_float_number(1, 2))
 
     # if unsuccessful login, lets retry
     sign_in_link = return__element_by_xpath(xpath="//a[@class='link js-signin-link']", _driver=_driver)
@@ -72,74 +73,83 @@ def main_cycle():
             click_btn_with(css_sel_or_xpath='//div[@onclick="window.location.reload();"]', _driver=driver,
                            login_func=login, use_xpath=True)
             set_scale(driver)
-            # go to profile
 
-            click_btn_with(css_sel_or_xpath='//*[@class ="b-link js-profile-header-name js-hp-view-element"]', _driver=driver, use_xpath=True)
+            go_to_profile_xpath = '//*[@class ="b-link js-profile-header-name js-hp-view-element"]'
+            click_btn_with(css_sel_or_xpath=go_to_profile_xpath, _driver=driver, use_xpath=True)
             # click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
-            time.sleep(random_float_number(1, 2))
+            time.sleep(random_float_number(0, 1))
 
-            page_content_main = return__element_by_xpath(xpath="//*[contains(@class,'page__content')]",
-                                                         _driver=driver)
-            # //*[contains(@class, 'page__content js-page-content')]
-            # //*[starts-with(@class, 'page__content js-page-content')]
-            if page_content_main is not None:
-                name_span = return__element_by_xpath(xpath='//*[@class="profile-header__user"]'
-                                                     , _driver=driver)
-                name_span_txt = (name_span.text if name_span is not None else '').replace('\n', '')
+            page_content_main = return_first_existing_element_or_none_for(xpaths=("//*[@id='app_c']",
+                                                                           "//*[contains(@class,'has-profile-info')]",
+                                                                           "//*[contains(@class ,'profile--info')]"),
+                                                                          _driver=driver)
+            if page_content_main:
 
-                page_content_main_text = page_content_main.text
-                page_content_main_text = re.sub(r"\n", ' ', page_content_main_text)
-                page_content_main_text = re.sub(r'\s', ' ', page_content_main_text)
-                page_content_main_text = re.sub(r'  ', ' ', page_content_main_text)
-                page_content_main_text = re.sub(r'  ', ' ', page_content_main_text)
-                page_content_main_text = textwrap.fill(page_content_main_text, 120)
+                name_span = return_first_existing_element_or_none_for(xpaths=('//*[contains(@class,"profile-header__user")]',
+                                                                  '//*[contains(@data-element-name,"userName")]',
+                                                                  '//*[contains(@class,"js-profile-header-name")]'),
+                                                            _driver=driver)
+
+                name_span_txt = (name_span.text.strip() if name_span is not None else '').replace('\n', '')
+
+                page_content_main_text = format_text_for_terminal_print(page_content_main.text)
 
                 number_without_appearance = 0
-                heights = tuple(map(str,range(178, 184)))
+                heights = tuple(map(str, range(177, 184)))
                 girl_is_found = False
+                print(f'{"-" * 100}')
                 print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}'
                       f'--[{name_span_txt}] ==> {page_content_main_text}')
+                have_kids = False
                 if 'Kids:' in page_content_main_text:  # kids
                     if 'Someday' not in page_content_main_text and 'No, never' not in page_content_main_text:
                         rids_str = ' ==== KIDS ===================================='
                         print(rids_str)
                         # print(page_content_main_text.replace('\n', '  '))
                         print(rids_str)
-                        continue
-                for search_word in heights:
-                    if search_word in page_content_main_text:
-                        about = return__element_by_xpath(xpath="//*[@class='profile-section__txt']", _driver=driver)
-                        description_txt = textwrap.fill(f"!!!==>>>height = {search_word},[{name_span_txt}]== about=\
-                            {about.text if about is not None else ''}\
-                                appearance={search_word} ", 120)
-                        driver.girls_set.add((description_txt, page_content_main_text))
-                        print(description_txt)
+                        have_kids = True
+                if not have_kids:
+                    for search_word in heights:
+                        search_word += ' cm'
+                        if search_word in page_content_main_text:
 
-                        answer = ask_question_with_sound(question="to finish enter 'y', for vote-NO enter: 'n', "
-                                                                  "to continue press other keys: "
-                                                         , sound_file="a2002011001-e02-128k")
-                        if answer == 'y':
-                            exit()
-                        elif answer == 'n':
-                            girl_is_found = False
-                        else:
-                            girl_is_found = True
-                        break
+                            description_txt = format_text_for_terminal_print(f"!!!==>>>height = {search_word},[{name_span_txt}]")
+                            driver.girls_set.add((description_txt, page_content_main_text))
+                            print(description_txt)
+
+                            answer = ask_question_with_sound(question="to finish enter 'y', for vote-NO enter: 'n', "
+                                                                      "to continue press other keys: "
+                                                             , sound_file="a2002011001-e02-128k")
+                            if answer == 'y':
+                                exit()
+                            elif answer == 'n':
+                                girl_is_found = False
+                            else:
+                                girl_is_found = True
+                            break
                 click_btn_with(css_sel_or_xpath='.js-profile-header-vote-' + ('yes' if girl_is_found else 'no')
                                , _driver=driver)
 
         else:
             click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
-        time.sleep(random_float_number(1, 2))
+        time.sleep(random_float_number(0, 1))
 
+
+BADOO_EMAIL = os.environ.get('BADOO_EMAIL')
+BADOO_PASS = os.environ.get('BADOO_PASS')
 
 if __name__ == '__main__':
 
+    if not BADOO_EMAIL or not BADOO_PASS:
+        ask_question_with_sound(
+            question="BADOO_EMAIL and BADOO_PASS isn't set in environ, press any key to stop music (and exit program): "
+            , sound_file="Pink Floyd - Another Brick In The Wall (HQ)")
+        exit()
     try:
         while True:
             main_cycle()
     except Exception as ex:
         print(f" error = {ex}")
-        ask_question_with_sound(question="press any key to stop music (and exit program): "
+        ask_question_with_sound(question="Error has occurred!  press any key to stop music (and exit program): "
                                 , sound_file="Pink Floyd - Another Brick In The Wall (HQ)")
         raise ex

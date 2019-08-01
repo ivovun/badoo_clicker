@@ -6,6 +6,7 @@ from random import randint
 from pygame import mixer
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException, TimeoutException
+import textwrap
 
 
 class WebDriver:
@@ -32,7 +33,7 @@ class WebDriver:
 
         finally:
             print('RESULTS ===============================')
-            _ = {print(x) for x in self.driver.girls_set}
+            _ = {print(format_text_for_terminal_print(f'{x[0]} + " " + {x[1]}')) for x in self.driver.girls_set}
             self.driver.close()
 
 
@@ -91,6 +92,14 @@ def return__element_by_xpath(xpath: str, _driver: webdriver):
     return _driver.find_element_by_xpath(xpath)
 
 
+def return_first_existing_element_or_none_for(xpaths: tuple, _driver: webdriver):
+    for xpath_variant in xpaths:
+        elem = return__element_by_xpath(xpath=xpath_variant, _driver=_driver)
+        if elem:
+            return elem
+    return None
+
+
 def ask_question_with_sound(question: str, sound_file: str) -> str:
     mixer.init()
     mixer.music.load(f"{sound_file}.mp3")
@@ -98,6 +107,14 @@ def ask_question_with_sound(question: str, sound_file: str) -> str:
     _answer = input(question).strip()
     mixer.music.stop()
     return _answer
+
+
+def format_text_for_terminal_print(init_txt: str) -> str:
+    dend_txt = textwrap.dedent(init_txt)
+    result_txt = textwrap.fill(dend_txt, initial_indent='==>',
+                               subsequent_indent=' ' * 8,
+                               width=120)
+    return result_txt
 
 
 LOGS_DIR = 'logs'
