@@ -12,6 +12,8 @@ from common import (
     return__element_by_xpath,
     ask_question_with_sound
 )
+import re
+import textwrap
 
 
 @do_that_func_only_if_css_element_was_found
@@ -71,37 +73,46 @@ def main_cycle():
                            login_func=login, use_xpath=True)
             set_scale(driver)
             # go to profile
-            click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
+
+            click_btn_with(css_sel_or_xpath='//*[@class ="b-link js-profile-header-name js-hp-view-element"]', _driver=driver, use_xpath=True)
+            # click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
             time.sleep(random_float_number(1, 2))
-            appearance_div_h = return__element_by_xpath(xpath="//div[@class='form-label b']/b[contains(text(),\
-             'Appearance:')]/parent::div//following-sibling::div", _driver=driver)
-            name_span = return__element_by_xpath(xpath='//h1[@class="profile-header__user"]'
-                                                 , _driver=driver)
-            name_span_txt = name_span.text if name_span is not None else ''
-            name_span_txt = name_span_txt.replace('\n', '')
-            if appearance_div_h is not None:
+
+            page_content_main = return__element_by_xpath(xpath="//*[contains(@class,'page__content')]",
+                                                         _driver=driver)
+            # //*[contains(@class, 'page__content js-page-content')]
+            # //*[starts-with(@class, 'page__content js-page-content')]
+            if page_content_main is not None:
+                name_span = return__element_by_xpath(xpath='//*[@class="profile-header__user"]'
+                                                     , _driver=driver)
+                name_span_txt = (name_span.text if name_span is not None else '').replace('\n', '')
+
+                page_content_main_text = page_content_main.text
+                page_content_main_text = re.sub(r"\n", ' ', page_content_main_text)
+                page_content_main_text = re.sub(r'\s', ' ', page_content_main_text)
+                page_content_main_text = re.sub(r'  ', ' ', page_content_main_text)
+                page_content_main_text = re.sub(r'  ', ' ', page_content_main_text)
+                page_content_main_text = textwrap.fill(page_content_main_text, 120)
+
                 number_without_appearance = 0
-                tup = tuple(range(178, 184))
+                heights = tuple(map(str,range(178, 184)))
                 girl_is_found = False
-                print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}--[{name_span_txt}] ==> \
-{appearance_div_h.text}')
-                whole_info = return__element_by_xpath(xpath="//div[@class='page__content-inner has-profile-info']"
-                                                      , _driver=driver)
-                whole_info_text = whole_info.text if whole_info is not None else ''
-                if 'Kids:' in whole_info_text:  # kids
-                    if 'Someday' not in whole_info_text and 'No, never' not in whole_info_text:
+                print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}'
+                      f'--[{name_span_txt}] ==> {page_content_main_text}')
+                if 'Kids:' in page_content_main_text:  # kids
+                    if 'Someday' not in page_content_main_text and 'No, never' not in page_content_main_text:
                         rids_str = ' ==== KIDS ===================================='
                         print(rids_str)
-                        print(whole_info_text.replace('\n', '  '))
+                        # print(page_content_main_text.replace('\n', '  '))
                         print(rids_str)
                         continue
-                for x in tup:
-                    if str(x) in appearance_div_h.text:
-                        about = return__element_by_xpath(xpath="//span[@class='profile-section__txt']", _driver=driver)
-                        description_txt = f"!!!==>>>height = {x},[{name_span_txt}]== about=\
-                        {about.text if about is not None else ''}\
-                            appearance={appearance_div_h.text} "
-                        driver.girls_set.add((description_txt, whole_info_text))
+                for search_word in heights:
+                    if search_word in page_content_main_text:
+                        about = return__element_by_xpath(xpath="//*[@class='profile-section__txt']", _driver=driver)
+                        description_txt = textwrap.fill(f"!!!==>>>height = {search_word},[{name_span_txt}]== about=\
+                            {about.text if about is not None else ''}\
+                                appearance={search_word} ", 120)
+                        driver.girls_set.add((description_txt, page_content_main_text))
                         print(description_txt)
 
                         answer = ask_question_with_sound(question="to finish enter 'y', for vote-NO enter: 'n', "
@@ -116,9 +127,10 @@ def main_cycle():
                         break
                 click_btn_with(css_sel_or_xpath='.js-profile-header-vote-' + ('yes' if girl_is_found else 'no')
                                , _driver=driver)
-            else:
-                click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
-            time.sleep(random_float_number(1, 2))
+
+        else:
+            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
+        time.sleep(random_float_number(1, 2))
 
 
 if __name__ == '__main__':

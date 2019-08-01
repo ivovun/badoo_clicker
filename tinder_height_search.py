@@ -192,18 +192,18 @@ def main_cycle():
             # go to profile
             click_btn_with(css_sel_or_xpath='.b-link.js-profile-header-name.js-hp-view-element', _driver=driver)
             time.sleep(random_float_number(1, 2))
-            appearance_div_h = return__element_by_xpath(xpath="//div[@class='form-label b']/b[contains(text(),\
+            page_content_main = return__element_by_xpath(xpath="//div[@class='form-label b']/b[contains(text(),\
              'Appearance:')]/parent::div//following-sibling::div", _driver=driver)
             name_span = return__element_by_xpath(xpath='//h1[@class="profile-header__user"]'
                                                  , _driver=driver)
             name_span_txt = name_span.text if name_span is not None else ''
             name_span_txt = name_span_txt.replace('\n', '')
-            if appearance_div_h is not None:
+            if page_content_main is not None:
                 number_without_appearence = 0
                 tup = tuple(range(178, 184))
                 girl_is_found = False
                 print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}--[{name_span_txt}] ==> \
-{appearance_div_h.text}')
+{page_content_main.text}')
                 whole_info = return__element_by_xpath(xpath="//div[@class='page__content-inner has-profile-info']"
                                                       , _driver=driver)
                 whole_info_text = whole_info.text if whole_info is not None else ''
@@ -217,10 +217,10 @@ def main_cycle():
                         continue
 
                 for x in tup:
-                    if str(x) in appearance_div_h.text:
+                    if str(x) in page_content_main.text:
                         about = return__element_by_xpath(xpath="//span[@class='profile-section__txt']", _driver=driver)
                         description_txt = f"!!!==>>>height = {x},[{name_span_txt}]== about={about.text if about is not None else ''}\
-                            appearance={appearance_div_h.text} "
+                            appearance={page_content_main.text} "
                         driver.girls_set.add((description_txt, whole_info_text))
                         print(description_txt)
 

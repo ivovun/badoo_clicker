@@ -38,7 +38,6 @@ class WebDriver:
 
 def do_that_func_only_if_css_element_was_found(orig_func):
     def modified_func_with(**kwargs):
-        global stack_of_errors
         try:
             return orig_func(**kwargs)
         except NoSuchElementException:
@@ -69,7 +68,7 @@ def send_to_field_with(css_sel_or_xpath: str, keys: str, _driver: webdriver):
 
 
 @do_that_func_only_if_css_element_was_found
-def click_btn_with(css_sel_or_xpath: str, _driver: webdriver, login_func=None,  use_xpath: bool = False):
+def click_btn_with(css_sel_or_xpath: str, _driver: webdriver, login_func=None, use_xpath: bool = False):
     btn_login = _driver.find_element_by_xpath(css_sel_or_xpath) if use_xpath else \
         _driver.find_element_by_css_selector(f'{css_sel_or_xpath}')
     btn_login.click()
