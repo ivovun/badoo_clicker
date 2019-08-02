@@ -5,7 +5,6 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import ElementClickInterceptedException
 from selenium.webdriver.support import expected_conditions
-import secret_keys
 import datetime
 import csv
 from selenium.webdriver.support.ui import WebDriverWait

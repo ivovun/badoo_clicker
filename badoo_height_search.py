@@ -80,15 +80,16 @@ def main_cycle():
             time.sleep(random_float_number(0, 1))
 
             page_content_main = return_first_existing_element_or_none_for(xpaths=("//*[@id='app_c']",
-                                                                           "//*[contains(@class,'has-profile-info')]",
-                                                                           "//*[contains(@class ,'profile--info')]"),
+                                                                                  "//*[contains(@class,'has-profile-info')]",
+                                                                                  "//*[contains(@class ,'profile--info')]"),
                                                                           _driver=driver)
             if page_content_main:
 
-                name_span = return_first_existing_element_or_none_for(xpaths=('//*[contains(@class,"profile-header__user")]',
-                                                                  '//*[contains(@data-element-name,"userName")]',
-                                                                  '//*[contains(@class,"js-profile-header-name")]'),
-                                                            _driver=driver)
+                name_span = return_first_existing_element_or_none_for(
+                    xpaths=('//*[contains(@class,"profile-header__user")]',
+                            '//*[contains(@data-element-name,"userName")]',
+                            '//*[contains(@class,"js-profile-header-name")]'),
+                    _driver=driver)
 
                 name_span_txt = (name_span.text.strip() if name_span is not None else '').replace('\n', '')
 
@@ -113,20 +114,26 @@ def main_cycle():
                         search_word += ' cm'
                         if search_word in page_content_main_text:
 
-                            description_txt = format_text_for_terminal_print(f"!!!==>>>height = {search_word},[{name_span_txt}]")
+                            description_txt = format_text_for_terminal_print(
+                                f"!!!==>>>height = {search_word},[{name_span_txt}]")
                             driver.girls_set.add((description_txt, page_content_main_text))
                             print(description_txt)
 
-                            answer = ask_question_with_sound(question="to finish enter 'y', for vote-NO enter: 'n', "
-                                                                      "to continue press other keys: "
-                                                             , sound_file="a2002011001-e02-128k")
-                            if answer == 'y':
-                                exit()
-                            elif answer == 'n':
-                                girl_is_found = False
-                            else:
-                                girl_is_found = True
-                            break
+                            while True:
+                                answer = ask_question_with_sound(
+                                    question="to finish enter 'f', for vote-NO enter: 'n', "
+                                             "for vote-YES enter: 'y' : "
+                                    , sound_file="a2002011001-e02-128k")
+                                if answer not in ['f', 'n', 'y', 'F', 'N', 'Y']:
+                                    continue
+                                if answer == 'f':
+                                    exit()
+                                elif answer == 'n':
+                                    girl_is_found = False
+                                elif answer == 'y':
+                                    girl_is_found = True
+                                break
+
                 click_btn_with(css_sel_or_xpath='.js-profile-header-vote-' + ('yes' if girl_is_found else 'no')
                                , _driver=driver)
 
