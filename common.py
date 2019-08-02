@@ -5,7 +5,12 @@ import os
 from random import randint
 from pygame import mixer
 from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException, ElementClickInterceptedException, TimeoutException
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    ElementClickInterceptedException,
+    ElementNotVisibleException,
+    TimeoutException
+)
 import textwrap
 
 
@@ -50,6 +55,12 @@ def do_that_func_only_if_css_element_was_found(orig_func):
             kwargs['_driver'].stack_of_errors.insert(0, ElementClickInterceptedException)
 
             pass
+        except ElementNotVisibleException:
+            # print(f' ElementNotVisibleException  with css class:{kwargs.get("css_sel_or_xpath", "")} ')
+            kwargs['_driver'].stack_of_errors.insert(0, ElementNotVisibleException)
+
+            pass
+
         except Exception as ex:
             err_name: str = type(ex).__name__
             kwargs['_driver'].stack_of_errors.insert(0, err_name)
