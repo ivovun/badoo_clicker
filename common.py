@@ -1,12 +1,12 @@
 import sys
 
-if not sys.prefix.__contains__('badoo/venv'):
+if sys.version_info[0] < 3:
+    raise Exception("Must be using Python 3")
+
+if not sys.prefix.__contains__('/venv'):
     # print(sys.prefix)
     print('Please run from virtual environment !!!!')
     exit()
-
-if sys.version_info[0] < 3:
-    raise Exception("Must be using Python 3")
 
 import csv
 import time
