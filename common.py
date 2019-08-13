@@ -1,3 +1,10 @@
+import sys
+
+if not sys.prefix.__contains__('badoo/venv'):
+    # print(sys.prefix)
+    print('Please run from virtual environment !!!!')
+    exit()
+
 import csv
 import time
 import datetime
