@@ -14,7 +14,6 @@ from common import (
     format_text_for_terminal_print,
     return_first_existing_element_or_none_for
 )
-import re
 
 
 @do_that_func_only_if_css_element_was_found
