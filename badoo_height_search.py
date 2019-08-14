@@ -20,6 +20,7 @@ from common import (
 )
 import collections
 
+
 @do_that_func_only_if_css_element_was_found
 def get_user_name(_driver: webdriver) -> str:
     return _driver.find_element_by_css_selector('.profile-header__name').text
