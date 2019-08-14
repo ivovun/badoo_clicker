@@ -95,7 +95,7 @@ def main_cycle():
                     current_main_content.clear()
                     raise TooLongStayingOnTheSamePageException
 
-                heights = tuple(map(str, range(177, 184)))
+                heights = tuple(map(str, range(173, 184)))
                 girl_is_found = False
                 print(f'{"-" * 100}')
                 print(f'testing --{datetime.datetime.now().strftime("%d.%m, %H:%M:%S")}'
