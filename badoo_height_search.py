@@ -14,9 +14,11 @@ from common import (
     return__element_by_xpath,
     ask_question_with_sound,
     format_text_for_terminal_print,
-    return_first_existing_element_or_none_for
+    return_first_existing_element_or_none_for,
+    TooMuchErrorsException,
+    TooLongStayingOnTheSamePageException
 )
-
+import collections
 
 @do_that_func_only_if_css_element_was_found
 def get_user_name(_driver: webdriver) -> str:
@@ -47,24 +49,14 @@ def main_cycle():
         driver.get('https://badoo.com/ru/signin/?f=top')
         login(driver)
         i = 0
-        max_number_without_appearence = 30
-        number_without_appearance = 0
+        max_number_without_appearence = 10
+        number_of_cycles_without_voting = 0
+        current_main_content = collections.defaultdict(int)
         while True:
             i += 1
-            number_without_appearance += 1
-            if number_without_appearance > max_number_without_appearence:
+            number_of_cycles_without_voting += 1
+            if number_of_cycles_without_voting > max_number_without_appearence:
                 return
-            max_number_of_same_errors = 100
-            set_of_errors = set()
-            ii = 0
-            if max_number_of_same_errors <= len(driver.stack_of_errors):
-                for err in driver.stack_of_errors:
-                    set_of_errors.add(err)
-                    if ii == max_number_of_same_errors:
-                        break
-                    ii += 1
-                if len(set_of_errors) == 1:
-                    return
             # deny blocking questions
             time.sleep(random_float_number(0, 1))
             click_btn_with(css_sel_or_xpath='.js-chrome-pushes-deny', _driver=driver)
@@ -84,6 +76,7 @@ def main_cycle():
                                                                                   "//*[contains(@class,'has-profile-info')]",
                                                                                   "//*[contains(@class ,'profile--info')]"),
                                                                           _driver=driver)
+
             if page_content_main:
 
                 name_span = return_first_existing_element_or_none_for(
@@ -96,7 +89,11 @@ def main_cycle():
 
                 page_content_main_text = format_text_for_terminal_print(page_content_main.text)
 
-                number_without_appearance = 0
+                current_main_content[page_content_main_text] += 1
+                if current_main_content[page_content_main_text] > 5:
+                    current_main_content.clear()
+                    raise TooLongStayingOnTheSamePageException
+
                 heights = tuple(map(str, range(177, 184)))
                 girl_is_found = False
                 print(f'{"-" * 100}')
@@ -136,10 +133,14 @@ def main_cycle():
                                 break
 
                 click_btn_with(css_sel_or_xpath='.js-profile-header-vote-' + ('yes' if girl_is_found else 'no')
-                               , _driver=driver)
+                               , _driver=driver, clear_errors=True)
+                number_of_cycles_without_voting = 0
+
 
         else:
-            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver)
+            click_btn_with(css_sel_or_xpath='.js-profile-header-vote-no', _driver=driver, clear_errors=True)
+            number_of_cycles_without_voting = 0
+
         time.sleep(random_float_number(0, 1))
 
 
@@ -150,14 +151,21 @@ if __name__ == '__main__':
 
     if not BADOO_EMAIL or not BADOO_PASS:
         ask_question_with_sound(
-            question="BADOO_EMAIL and BADOO_PASS isn't set in environ, press any key to stop music (and exit program): "
-            , sound_file="Pink Floyd - Another Brick In The Wall (HQ)")
+            question="BADOO_EMAIL and BADOO_PASS isn't set in environ, press any key to stop music (and exit program): ")
         exit()
     try:
         while True:
             main_cycle()
+    except TooLongStayingOnTheSamePageException as ex:
+        print(f" too long staying on the same page  = {ex}")
+        ask_question_with_sound()
+
+    except TooMuchErrorsException as ex:
+        print(f" too much errors of type = {ex.exception_instance}")
+        ask_question_with_sound()
+        raise ex.exception_instance
+
     except Exception as ex:
         print(f" error = {ex}")
-        ask_question_with_sound(question="Error has occurred!  press any key to stop music (and exit program): "
-                                , sound_file="Pink Floyd - Another Brick In The Wall (HQ)")
+        ask_question_with_sound()
         raise ex
